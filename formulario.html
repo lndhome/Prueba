@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
+<body>
+    <input type="file" id="inputFile" accept=".xlsx" />
+    <button onclick="handleFile()">Cargar archivo</button> 
+    <div id="output"></div>
+<script>
+    function handleFile() {
+  var file = document.getElementById("inputFile").files[0];
+  var reader = new FileReader();
+
+  reader.onload = function (e) {
+    var data = new Uint8Array(e.target.result);
+    var workbook = XLSX.read(data, { type: "array" });
+
+    var sheetName = workbook.SheetNames[0];
+    var worksheet = workbook.Sheets[sheetName];
+
+    var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+    var html = generateHTMLTable(jsonData);
+
+    document.getElementById("output").innerHTML = html;
+  };
+
+  reader.readAsArrayBuffer(file);
+}
+
+function generateHTMLTable(jsonData) {
+  var html = "<table>";
+
+  for (var i = 0; i < jsonData.length; i++) {
+    html += "<tr>";
+    for (var j = 0; j < jsonData[i].length; j++) {
+      html += "<td>" + jsonData[i][j] + "</td>";
+    }
+    html += "</tr>";
+  }
+
+  html += "</table>";
+  return html;
+}
+
+</script>
+
+</body>
+</html>
+
+
+
